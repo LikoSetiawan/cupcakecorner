@@ -8,7 +8,25 @@
 import Foundation
 
 @Observable
-class Order: Codable{
+class Order: ObservableObject, Codable{
+    
+    func saveToUserDefaults(){
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(self){
+            UserDefaults.standard.set(encoded, forKey: "SavedOrder")
+        }
+    }
+    
+    static func loadFromUserDefaults() -> Order?{
+        if let data = UserDefaults.standard.data(forKey: "SavedOrder"){
+            let decoder = JSONDecoder()
+            if let decodedOrder = try? decoder.decode(Order.self, from: data){
+                return decodedOrder
+            }
+        }
+        return nil
+    }
+    
     enum CodingKeys: String, CodingKey{
         case _type = "type"
         case _quantity = "quantity"
@@ -44,7 +62,7 @@ class Order: Codable{
     var zip = ""
     
     var hasValidAddress: Bool{
-        if name.isEmpty || streetAddress.isEmpty || city.isEmpty || zip.isEmpty{
+        if name.isReallyEmpty || streetAddress.isReallyEmpty || city.isReallyEmpty || zip.isReallyEmpty{
             return false
         }
         return true
@@ -67,5 +85,12 @@ class Order: Codable{
             cost += Double(quantity) / 2
         }
         return cost
+    }
+}
+
+
+extension String{
+    var isReallyEmpty: Bool{
+        self.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }

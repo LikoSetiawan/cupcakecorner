@@ -25,6 +25,22 @@ struct AddressView: View {
             }
             .disabled(order.hasValidAddress == false)
             
+            Button("Test Save & Retrieve") {
+                // Save the order to UserDefaults
+                order.saveToUserDefaults()
+                
+                // Retrieve the order from UserDefaults
+                if let retrievedOrder = Order.loadFromUserDefaults() {
+                    // Print the retrieved order details
+                    print("Retrieved Order:")
+                    print("Name: \(retrievedOrder.name)")
+                    print("Street Address: \(retrievedOrder.streetAddress)")
+                    print("City: \(retrievedOrder.city)")
+                    print("Zip Code: \(retrievedOrder.zip)")
+                } else {
+                    print("Error: Unable to retrieve order from UserDefaults.")
+                }
+            }
         }
         .navigationTitle("Delivery details")
         .navigationBarTitleDisplayMode(.inline)
